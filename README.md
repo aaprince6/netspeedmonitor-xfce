@@ -1,40 +1,54 @@
 # NetSpeedMonitor XFCE
 
-A lightweight real-time upload/download speed indicator for the **XFCE panel**, powered by Bash and XFCE Generic Monitor (Genmon).
+[![CI](https://github.com/aaprince6/netspeedmonitor-xfce/actions/workflows/ci.yml/badge.svg)](https://github.com/aaprince6/netspeedmonitor-xfce/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Shell: Bash](https://img.shields.io/badge/Shell-Bash-4EAA25.svg?logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
 
-It displays combined traffic across eligible physical network adapters by default, for example:
+A lightweight, Windows-style real-time network speed indicator for the **XFCE panel**. It displays combined download and upload rates using Bash and the XFCE Generic Monitor (Genmon) plugin.
 
-- `↓ 12.5 MB/s` — download
-- `↑ 2.4 MB/s` — upload
+| Download | Upload |
+|:--:|:--:|
+| Green ↓ | Blue ↑ |
 
-Download is green; upload is blue. Hover over the indicator to see the adapters being counted and the current rates.
+## Target operating systems
+
+**Primary target:** Kali Linux Rolling with the XFCE desktop.
+
+| Operating system | Support status | Notes |
+|---|---|---|
+| Kali Linux Rolling (XFCE) | Primary target | Main development and user testing platform |
+| Debian 12 or newer (XFCE) | Supported | Install `xfce4-genmon-plugin` from APT |
+| Ubuntu 22.04 LTS or newer (XFCE) | Supported | Install `xfce4-genmon-plugin` from APT |
+| Other Linux distributions with XFCE | Expected to work | Requires Bash, standard core utilities, Linux network statistics and Genmon |
+
+This is an **XFCE panel applet/script**, not a standalone desktop application. The panel display requires XFCE and the Generic Monitor plugin. Other desktop environments are not currently supported.
 
 ## Features
 
-- Live upload and download rates, refreshed by XFCE Generic Monitor.
-- Combines traffic across physical/network-device-backed adapters by default.
-- Automatically detects available adapters; no hard-coded `eth0` or `wlan0`.
+- Live download and upload speeds, refreshed by Genmon.
+- Sums traffic across eligible physical/network-device-backed interfaces by default.
+- Automatically discovers adapters; no hard-coded `eth0` or `wlan0`.
 - Human-readable B/s, KB/s and MB/s units.
-- Colored download/upload indicators and a tooltip.
-- No root privileges required for normal operation.
-- Small Bash implementation with no extra runtime dependencies beyond standard Kali/Debian utilities.
+- Colored download/upload indicators and an informative hover tooltip.
+- Configurable virtual-interface inclusion and interface exclusions.
+- Runs as the current user; root access is not required.
+- Lightweight Bash implementation with no background daemon.
 
 ## Requirements
 
-- Linux with `/sys/class/net` statistics exposed by the kernel.
+- Linux kernel exposing network counters in `/sys/class/net`.
+- XFCE desktop and panel.
 - Bash, `awk`, `date`, and standard core utilities.
-- XFCE panel and the `xfce4-genmon-plugin` package for the panel display.
+- `xfce4-genmon-plugin`.
 
-On Kali Linux or Debian:
+On Kali Linux, Debian or Ubuntu:
 
 ```bash
 sudo apt update
 sudo apt install xfce4-genmon-plugin
 ```
 
-## Install
-
-Clone the repository and run the installer:
+## Installation
 
 ```bash
 git clone https://github.com/aaprince6/netspeedmonitor-xfce.git
@@ -43,26 +57,24 @@ chmod +x install.sh uninstall.sh
 ./install.sh
 ```
 
-The installer copies the monitor to `~/.local/bin/netspeed-xfce`.
+The installer places the executable at `~/.local/bin/netspeed-xfce` (or `$XDG_BIN_HOME/netspeed-xfce` when `XDG_BIN_HOME` is set).
 
-## Add it to the XFCE panel
+## Add the monitor to the XFCE panel
 
 1. Right-click the XFCE panel.
-2. Choose **Panel → Add New Items**.
-3. Select **Generic Monitor** and click **Add**.
-4. Right-click the new Generic Monitor item and open **Properties**.
-5. Set **Command** to:
+2. Select **Panel → Add New Items**.
+3. Add **Generic Monitor**.
+4. Open the new item's **Properties**.
+5. Set **Command** to the installed script path, usually:
 
    ```text
    /home/YOUR_USERNAME/.local/bin/netspeed-xfce
    ```
 
-   Replace `YOUR_USERNAME` with your Linux username. If you used a custom `XDG_BIN_HOME`, use the installed path instead.
-
 6. Set the update period to **1 second**.
-7. Close the properties window. The first sample may show zero; rates appear after the next refresh.
+7. Close the dialog. The first sample may show zero; rates appear after the next refresh.
 
-You can test the script in a terminal:
+Replace `YOUR_USERNAME` with your Linux username. You can verify the script from a terminal:
 
 ```bash
 ~/.local/bin/netspeed-xfce
@@ -70,65 +82,54 @@ sleep 1
 ~/.local/bin/netspeed-xfce
 ```
 
-The script prints Genmon markup (`<txt>` and `<tool>`), so it is intended to be run by Generic Monitor rather than as a standalone terminal dashboard.
+The script prints Genmon's `<txt>` and `<tool>` markup. It is intended to be run by Generic Monitor, not as a standalone terminal dashboard.
 
-## Adapter selection and counting
+## Configuration
 
-By default, the monitor counts interfaces that have a backing device in `/sys/class/net/INTERFACE/device`. This normally includes physical Ethernet, Wi-Fi and USB network adapters, while excluding loopback and many virtual interfaces such as Tailscale, Docker and bridges.
+The monitor discovers interfaces automatically. By default, it counts interfaces with a device link at `/sys/class/net/INTERFACE/device`. This normally includes physical Ethernet, Wi-Fi and USB network adapters while excluding loopback and many virtual interfaces.
 
-This is a **sum of interface counters**, not a deduplicated measurement of internet traffic. If the same packets traverse more than one counted adapter (for example, in a bridge, router, bond, or forwarding setup), the total can be counted more than once. Interface counter semantics also vary by driver and network topology.
+| Environment variable | Default | Description |
+|---|---:|---|
+| `NETSPEED_INCLUDE_VIRTUAL` | `0` | Set to `1` to include interfaces without a physical device backing |
+| `NETSPEED_EXCLUDE_IFACES` | `lo` | Space-separated interface names to exclude |
 
-Optional environment variables:
-
-| Variable | Default | Description |
-|---|---|---|
-| `NETSPEED_INCLUDE_VIRTUAL` | `0` | Set to `1` to include interfaces without a physical device backing. |
-| `NETSPEED_EXCLUDE_IFACES` | `lo` | Space-separated interface names to exclude. |
-
-Example command in Generic Monitor to include virtual adapters but exclude Tailscale:
+Example Genmon command to include virtual interfaces but exclude Tailscale:
 
 ```bash
 NETSPEED_INCLUDE_VIRTUAL=1 NETSPEED_EXCLUDE_IFACES="lo tailscale0" /home/YOUR_USERNAME/.local/bin/netspeed-xfce
 ```
 
-Note: environment variables are applied to each script invocation. Keep the same options for every refresh so the rate calculation remains consistent.
+Keep the same environment settings on every refresh so rate calculations remain consistent.
+
+### How totals are calculated
+
+The monitor sums kernel receive/transmit byte counters for the selected interfaces. This is **not** a deduplicated measurement of internet traffic. In bridges, routers, bonds or forwarding configurations, the same packets may be counted on more than one interface. Results depend on network topology and driver counter semantics.
 
 ## Troubleshooting
 
-### Generic Monitor shows no output
+### Genmon displays no output
 
-- Confirm the command path is correct and executable:
+```bash
+ls -l ~/.local/bin/netspeed-xfce
+~/.local/bin/netspeed-xfce
+dpkg -l | grep xfce4-genmon-plugin
+```
 
-  ```bash
-  ls -l ~/.local/bin/netspeed-xfce
-  ~/.local/bin/netspeed-xfce
-  ```
+Confirm that the Generic Monitor command points to the installed script and that it is executable.
 
-- Confirm Genmon is installed:
+### Speeds remain at zero
 
-  ```bash
-  dpkg -l | grep xfce4-genmon-plugin
-  ```
+Generate network traffic and wait for at least two refreshes. Check interface state and kernel counters:
 
-### Speeds stay at zero
+```bash
+ip -br link
+cat /sys/class/net/INTERFACE/statistics/rx_bytes
+cat /sys/class/net/INTERFACE/statistics/tx_bytes
+```
 
-- Generate network traffic and wait for at least two refreshes.
-- Check that the adapter is up:
+Replace `INTERFACE` with the actual interface name.
 
-  ```bash
-  ip -br link
-  ```
-
-- Inspect kernel counters:
-
-  ```bash
-  cat /sys/class/net/eth0/statistics/rx_bytes
-  cat /sys/class/net/eth0/statistics/tx_bytes
-  ```
-
-  Replace `eth0` with your interface name.
-
-### Interface is not included
+### An interface is missing
 
 Check whether it has a device link:
 
@@ -136,24 +137,30 @@ Check whether it has a device link:
 ls -l /sys/class/net/INTERFACE/device
 ```
 
-If it is virtual, use `NETSPEED_INCLUDE_VIRTUAL=1` and configure exclusions as needed.
+If it is virtual, set `NETSPEED_INCLUDE_VIRTUAL=1` and configure exclusions as needed.
 
 ## Uninstall
 
-From the project directory:
+From the cloned project directory:
 
 ```bash
 ./uninstall.sh
 ```
 
-Then remove the Generic Monitor item from the XFCE panel if you added it.
+Then remove the Generic Monitor item manually from the XFCE panel.
 
-## Contributing
+## Development and contributions
 
-Issues and pull requests are welcome. Please include your distribution, XFCE version, Genmon version, interface type, and relevant command output when reporting a bug. Do not include passwords, public IPs, or other sensitive information.
+Bug reports and pull requests are welcome. Before submitting changes, run:
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+```bash
+bash -n src/netspeed-xfce.sh install.sh uninstall.sh
+```
+
+For bug reports, include your distribution/version, XFCE version, Genmon version, interface type and relevant command output. Remove public IP addresses and other sensitive information.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE).
+Distributed under the [MIT License](LICENSE).
