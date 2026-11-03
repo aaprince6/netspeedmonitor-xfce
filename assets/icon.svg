@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">NetSpeedMonitor XFCE icon</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101b35"/><stop offset="1" stop-color="#030914"/></linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#22d3ee"/><stop offset="1" stop-color="#0875ee"/></linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a3f53b"/><stop offset="1" stop-color="#16c65b"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect x="18" y="18" width="476" height="476" rx="104" fill="url(#bg)" stroke="#168bff" stroke-width="10"/>
+  <path d="M104 276 A164 164 0 0 1 408 276" fill="none" stroke="#18334e" stroke-width="34" stroke-linecap="round"/>
+  <path d="M104 276 A164 164 0 0 1 184 130" fill="none" stroke="url(#green)" stroke-width="34" stroke-linecap="round" filter="url(#glow)"/>
+  <path d="M184 130 A164 164 0 0 1 328 130" fill="none" stroke="#20c9e9" stroke-width="34" stroke-linecap="round"/>
+  <path d="M328 130 A164 164 0 0 1 408 276" fill="none" stroke="url(#blue)" stroke-width="34" stroke-linecap="round" filter="url(#glow)"/>
+  <path d="M256 270 L354 154 L282 292 Z" fill="#f4f8ff"/>
+  <circle cx="256" cy="278" r="27" fill="#f4f8ff"/>
+  <path d="M152 332 V414 M118 380 L152 414 L186 380" fill="none" stroke="url(#green)" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M360 414 V332 M326 366 L360 332 L394 366" fill="none" stroke="url(#blue)" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
