@@ -10,6 +10,17 @@
 
 A lightweight, Windows-style real-time network speed indicator for the **XFCE panel**. It displays combined download and upload rates using Bash and the XFCE Generic Monitor (Genmon) plugin.
 
+## Screenshots
+
+<p align="center">
+  <img src="assets/screenshots/panel-overview.png" alt="NetSpeedMonitor XFCE panel overview" width="48%" />
+  <img src="assets/screenshots/download.png" alt="NetSpeedMonitor download speed display" width="48%" />
+</p>
+<p align="center">
+  <img src="assets/screenshots/upload.png" alt="NetSpeedMonitor upload speed display" width="48%" />
+  <img src="assets/screenshots/settings.png" alt="NetSpeedMonitor configuration settings" width="48%" />
+</p>
+
 | Download | Upload |
 |:--:|:--:|
 | Green ↓ | Blue ↑ |
