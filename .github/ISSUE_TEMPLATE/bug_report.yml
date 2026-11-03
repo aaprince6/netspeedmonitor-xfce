@@ -1,0 +1,48 @@
+name: Bug report
+description: Report a reproducible problem with NetSpeedMonitor XFCE.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Please remove public IP addresses, usernames, and other sensitive information before submitting logs."
+  - type: input
+    id: version
+    attributes:
+      label: NetSpeedMonitor XFCE version
+      placeholder: "v1.0.0 or commit SHA"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system and version
+      placeholder: "Kali Linux Rolling, Debian 12, Ubuntu 24.04..."
+    validations:
+      required: true
+  - type: input
+    id: desktop
+    attributes:
+      label: XFCE and Genmon versions
+      placeholder: "XFCE version / xfce4-genmon-plugin version"
+    validations:
+      required: false
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce and relevant output
+      description: Include commands and output where possible. Redact sensitive information.
+    validations:
+      required: true
