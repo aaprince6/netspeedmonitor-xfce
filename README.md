@@ -1,5 +1,9 @@
 # NetSpeedMonitor XFCE
 
+<p align="center">
+  <img src="assets/icon.svg" alt="NetSpeedMonitor XFCE icon" width="180" />
+</p>
+
 [![CI](https://github.com/aaprince6/netspeedmonitor-xfce/actions/workflows/ci.yml/badge.svg)](https://github.com/aaprince6/netspeedmonitor-xfce/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Shell: Bash](https://img.shields.io/badge/Shell-Bash-4EAA25.svg?logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
